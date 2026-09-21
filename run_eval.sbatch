@@ -12,22 +12,22 @@
 #
 #SBATCH --job-name=smolvla-lang
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=nome.cognome@unibo.it
+#SBATCH --mail-user=matteo.preda2@studio.unibo.it
 #SBATCH --time=08:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=4
 #SBATCH --mem=32G
-#SBATCH --partition=l40
+#SBATCH --partition=rtx2080
 #SBATCH --output=logs/%x_%j.out
-#SBATCH --chdir=/scratch.hpc/nome.cognome
+#SBATCH --chdir=/scratch.hpc/matteo.preda/tesi
 #SBATCH --gres=gpu:1
 
 set -eo pipefail
 
 # ---- paths (must match setup_cluster.sh) ----
-export SCRATCH_ROOT="${SCRATCH_ROOT:-/scratch.hpc/$USER}"
-export PROJECT_DIR="${PROJECT_DIR:-$SCRATCH_ROOT/smolvla_eval}"     # folder with the notebook + launcher
+export SCRATCH_ROOT="${SCRATCH_ROOT:-/scratch.hpc/matteo.preda/tesi}"   # keep in sync with setup_cluster.sh
+export PROJECT_DIR="${PROJECT_DIR:-$SLURM_SUBMIT_DIR}"     # folder you ran `sbatch` from: it holds smolvla_text_perturbation.py + the launcher
 export PATH="$SCRATCH_ROOT/venv/bin:$PATH"
 
 # ---- keep every cache out of the 400 MB home quota ----
@@ -58,15 +58,6 @@ export RUN_NAME="${RUN_NAME:-smolvla_lang_${SUITE}${SUFFIX}}"
 echo "job $SLURM_JOB_ID on $(hostname) | suite=$SUITE max_tasks=$MAX_TASKS chunk=$CHUNK_SIZE | $(python --version)"
 nvidia-smi -L
 
-# ---- run the notebook as a plain script (no Jupyter kernel needed, and the log streams live) ----
-SCRIPT="$TMPDIR/smolvla_eval_${SLURM_JOB_ID}.py"
-python - "$PROJECT_DIR/SmalVLA_text_perturbation.ipynb" "$SCRIPT" <<'PY'
-import json, sys
-nb = json.load(open(sys.argv[1], encoding="utf-8"))
-code = ["".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "code"]
-open(sys.argv[2], "w", encoding="utf-8").write("\n\n".join(code) + "\n")
-PY
-
 cd "$PROJECT_DIR"
-python -u "$SCRIPT"
+python -u smolvla_text_perturbation.py      # -u: unbuffered, so the SLURM log streams live
 echo "finished: $OUTPUT_DIR/$RUN_NAME/results.json"

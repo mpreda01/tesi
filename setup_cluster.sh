@@ -150,5 +150,5 @@ print(f"   all imports OK, LIBERO-plus libero_spatial = {n} tasks")
 PY
 
 echo
-echo "Setup finished. Next: copy the notebook + cluster/ files to $SCRATCH_ROOT/smolvla_eval and run:"
+echo "Setup finished. Next, from the folder that contains run_eval.sbatch:"
 echo "   sbatch --export=ALL,MAX_TASKS=2 run_eval.sbatch      # 2-task test first"
