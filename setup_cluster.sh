@@ -53,8 +53,9 @@ PIP="$VENV/bin/pip"
 echo "== 3/7  lerobot + LIBERO-plus runtime dependencies =="
 # NOT lerobot[all] / lerobot[libero]: they pull in hf-libero, which shadows LIBERO-plus.
 "$PIP" install "lerobot[smolvla,dataset]==0.6.1"
+# `future`: bddl 1.0.1 declares no dependencies but does `from future.utils import ...` (Colab has it preinstalled).
 "$PIP" install robosuite==1.4.1 bddl==1.0.1 easydict==1.13 mujoco==3.7.0 \
-               Wand==0.6.13 scikit-image==0.25.2 gym==0.26.2 cloudpickle \
+               Wand==0.6.13 scikit-image==0.25.2 gym==0.26.2 cloudpickle future \
                h5py imageio matplotlib scipy pyyaml
 # robosuite drags in the GUI build of OpenCV, which needs libGL.so.1 and fails to import on headless nodes.
 "$PIP" uninstall -y opencv-python opencv-python-headless
