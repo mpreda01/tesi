@@ -10,7 +10,7 @@
 # (packages, LIBERO-plus assets, model weights) happens here, once.
 set -eo pipefail
 
-export SCRATCH_ROOT="${SCRATCH_ROOT:-/scratch.hpc/$USER}"   # check that this is really your scratch folder
+export SCRATCH_ROOT="/scratch.hpc/matteo.preda/tesi"   # check that this is really your scratch folder
 VENV="$SCRATCH_ROOT/venv"
 LP="$SCRATCH_ROOT/LIBERO-plus"
 export LIBERO_CONFIG_PATH="$SCRATCH_ROOT/libero_config"
